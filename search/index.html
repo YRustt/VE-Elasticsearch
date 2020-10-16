@@ -108,12 +108,11 @@
             }
             var args = {
                 _source: ["title"],
-                query: {
-                    match: {
-                        "title.keyword": {
-                            query: value,
-                            fuzziness: 2,
-                            operator: "and"
+                suggest: {
+                    "my-suggest": {
+                        prefix: value,
+                        completion: {
+                            field: "title.completion"
                         }
                     }
                 }
@@ -127,21 +126,18 @@
                 async: false,
                 contentType: "application/json; charset=utf-8",
                 success: function(result) {
-                    var total_count = result["hits"]["total"]["value"];
                     $("ul").remove();
                     $("p").remove();
 
                     $("div").append("<p id='p_search'></p>");
                     $("#p_search").append(result["took"] + " milliseconds");
 
-                    if (total_count !== 0) {
-                        $("div").append("<ul id='ul_search'></ul>");
-                        result["hits"]["hits"].forEach(element => {
-                            var title = element["_source"]["title"];
-                            console.log(title);
-                            $("#ul_search").append("<li>" + title + "</li>");
-                        });
-                    }
+                    $("div").append("<ul id='ul_search'></ul>");
+                    result["suggest"]["my-suggest"][0]["options"].forEach(element => {
+                        var title = element["_source"]["title"];
+                        console.log(title);
+                        $("#ul_search").append("<li>" + title + "</li>");
+                    });
                 }
             });
         }
@@ -156,7 +152,7 @@
                 size: 20,
                 query: {
                     match: {
-                        "title.keyword": {
+                        "content.main": {
                             query: value,
                             fuzziness: 2,
                             operator: "and"
