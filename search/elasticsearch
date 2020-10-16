@@ -1,0 +1,130 @@
+DELETE ftst
+
+PUT /ftst
+{
+  "settings": {
+    "analysis": {
+      "filter": {
+        "russian_stop": {
+          "type":       "stop",
+          "stopwords":  "_russian_"
+        },
+        "russian_stemmer": {
+          "type":       "stemmer",
+          "language":   "russian"
+        },
+        "autocomplete_filter": {
+          "type": "edge_ngram",
+          "min_gram": 2,
+          "max_gram": 20
+        }
+      },
+      "char_filter": {
+        "char_filter": {
+          "type": "mapping",
+          "mappings": ["Ё=>Е", "ё=>е"]
+        }
+      },
+      "analyzer": {
+        "rebuilt_russian": {
+          "tokenizer":  "standard",
+          "filter": [
+            "lowercase",
+            "russian_stop",
+            "russian_stemmer",
+            "autocomplete_filter"
+          ],
+          "char_filter": [
+            "char_filter"
+          ]
+        }
+      }
+    }
+  }
+}
+
+GET ftst/_settings
+
+
+PUT ftst/_mapping
+{
+    "properties": {
+      "title": {
+        "type": "text",
+        "fields": {
+          "completion": {
+            "type": "completion"
+            //"analyzer": "rebuilt_russian",
+            //"search_analyzer": "rebuilt_russian"
+          },
+          "main": {
+            "type": "text",
+            "analyzer": "rebuilt_russian"
+            //"search_analyzer": "rebuilt_russian",
+            //"search_quote_analyzer": "rebuilt_russian"
+          }
+        }
+      },
+      "content": {
+        "type": "text",
+        "fields": {
+          "main": {
+            "type": "text",
+            "analyzer": "russian",
+            "search_analyzer": "russian"
+            //"search_quote_analyzer": "rebuilt_russian"
+          }
+        }
+      }
+    }
+}
+
+GET ftst/_mapping
+
+
+GET /ftst/_search
+{
+  "query": {
+    "match": {
+      "content.main": {
+        "query": "коллективными договорами",
+        //"analyzer": "russian",
+        "fuzziness": 2,
+        "operator": "and"
+      }
+    }
+  }
+}
+
+GET /ftst/_search
+{
+  "_source": "title",
+  "suggest": {
+    "my-suggest": {
+      "prefix": "рук",
+      "completion": {
+        "field": "title.completion"
+      }
+    }
+  }
+}
+
+GET /ftst/_search
+{
+  "_source": "title",
+  "suggest": {
+    "my-suggest": {
+      "prefix": "догово",
+      "term": {
+        "field": "title.completion"
+      }
+    }
+  }
+}
+
+GET /ftst/_analyze
+{
+  "text": "коллективный договор",
+  "analyzer": "russian"
+}
+}
