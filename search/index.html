@@ -153,6 +153,7 @@
 
             var args = {
                 _source: ["title", "content"],
+                size: 20,
                 query: {
                     match: {
                         "title.keyword": {
