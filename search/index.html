@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search</title>
+
+    <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+    <style>
+        body {
+            background: url(static/background.jpg) repeat;
+        }
+
+        div {
+            width: 50%;
+            min-height: 100vh;
+            height: auto;
+            left: 25%;
+            background: white;
+            padding-top: 20px;
+            position: absolute;
+            z-index: -1000;
+            border-radius: 50px;
+        }
+
+        input {
+            margin-left: 25%;
+            margin-right: 0 !important;
+            width: 38%;
+            height: 40px;
+            border-radius: 50px;
+            border: 1px solid #38B6FF;
+            radius: 0;
+            position: relative;
+            z-index: 1;
+            padding-left: 20px;
+            box-shadow: 0px 4px 21px rgba(56, 182, 255, 0.36);
+        }
+
+        input:focus {
+            outline: none;
+        }
+
+        button {
+            margin-left: -50px !important;
+            width: calc(10% + 50px);
+            height: 44px;
+            border-radius: 50px;
+            border: 1px solid #38B6FF;
+            padding-left: 30px;
+            background: #B7E4FF;
+            position: relative;
+            z-index: 0;
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        #p_search {
+            margin-left: calc(25% + 20px);
+        }
+
+        #ul_search {
+            margin-left: calc(25%);
+            margin-right: calc(25% + 10% + 20px);
+        }
+
+        ul {
+            margin: 20px 20px;
+        }
+
+        p {
+            margin: 20px 20px;
+        }
+
+        #ul_result {
+            list-style-type: none;
+        }
+
+        #li_result {
+            position: relative;
+        }
+
+        #button_result {
+            width: 120px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin-left: 0;
+            box-shadow: none;
+            border-radius: none;
+            height: 20px;
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <input oninput="myinput(this.value)">
+        <button onclick="myclick()">Search</button>
+    </div>
+    <script>
+        function myinput(value) {
+            if (value === '') {
+                $("ul").remove();
+                $("p").remove();
+                return;
+            }
+            var args = {
+                _source: ["title"],
+                query: {
+                    match: {
+                        "title.keyword": {
+                            query: value,
+                            fuzziness: 2,
+                            operator: "and"
+                        }
+                    }
+                }
+            };
+            $.ajax({
+                url: "http://127.0.0.1:9200/ftst/_search",
+                crossDomain: true,
+                type: "POST",
+                data: JSON.stringify(args),
+                dataType: "json",
+                async: false,
+                contentType: "application/json; charset=utf-8",
+                success: function(result) {
+                    var total_count = result["hits"]["total"]["value"];
+                    $("ul").remove();
+                    $("p").remove();
+
+                    $("div").append("<p id='p_search'></p>");
+                    $("#p_search").append(result["took"] + " milliseconds");
+
+                    if (total_count !== 0) {
+                        $("div").append("<ul id='ul_search'></ul>");
+                        result["hits"]["hits"].forEach(element => {
+                            var title = element["_source"]["title"];
+                            console.log(title);
+                            $("#ul_search").append("<li>" + title + "</li>");
+                        });
+                    }
+                }
+            });
+        }
+
+        function myclick() {
+            console.log("asdf");
+            var value = $("input").val();
+            console.log(value);
+
+            var args = {
+                _source: ["title", "content"],
+                query: {
+                    match: {
+                        "title.keyword": {
+                            query: value,
+                            fuzziness: 2,
+                            operator: "and"
+                        }
+                    }
+                }
+            };
+
+            $.ajax({
+                url: "http://127.0.0.1:9200/ftst/_search",
+                crossDomain: true,
+                type: "POST",
+                data: JSON.stringify(args),
+                dataType: "json",
+                async: false,
+                contentType: "application/json; charset=utf-8",
+                success: function(result) {
+                    var total_count = result["hits"]["total"]["value"];
+                    $("ul").remove();
+                    $("p").remove();
+
+                    $("div").append("<p></p>");
+                    $("p").append(result["took"] + " milliseconds");
+
+                    if (total_count !== 0) {
+                        $("div").append("<ul id='ul_result'></ul>");
+                        result["hits"]["hits"].forEach(element => {
+                            var id = element["_source"]["_id"];
+                            var title = element["_source"]["title"];
+                            var content = element["_source"]["content"];
+                            console.log(title);
+                            $("ul").append("<li id='li_result'><p>" + title + "</p><input id='button_result' type='button' value='Display content' onclick='changedisplay(this)'><span style='display:none'>" + content + "</span></li>");
+                        });
+                    }
+                }
+            });
+        }
+        function changedisplay(button) {
+            var span = $(button).next();
+            var display = span.css("display");
+            if (display === 'none') {
+                span.css("display", "inherit");
+            } else {
+                span.css("display", "none");
+            }
+        }
+    </script>
+</body>
+</html>
