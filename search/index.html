@@ -96,7 +96,7 @@
 </head>
 <body>
     <div>
-        <input oninput="myinput(this.value)">
+        <input id="input" oninput="myinput(this.value)">
         <button onclick="myclick()">Search</button>
     </div>
     <script>
@@ -135,15 +135,20 @@
                     $("div").append("<ul id='ul_search'></ul>");
                     result["suggest"]["my-suggest"][0]["options"].forEach(element => {
                         var title = element["_source"]["title"];
-                        console.log(title);
-                        $("#ul_search").append("<li>" + title + "</li>");
+                        var id = element["_id"];
+                        console.log(id, title);
+                        $("#ul_search").append("<li onclick='liclick(this.id)' id='" + id + "'>" + title + "</li>");
                     });
                 }
             });
         }
+        function liclick(id) {
+            var value = $("#" + id).text();
+            $("#input").val(value);
+            $("#input").trigger("input");
+        }
 
         function myclick() {
-            console.log("asdf");
             var value = $("input").val();
             console.log(value);
 
@@ -154,7 +159,7 @@
                     match: {
                         "content.main": {
                             query: value,
-                            fuzziness: 2,
+<!--                            fuzziness: 2,-->
                             operator: "and"
                         }
                     }
