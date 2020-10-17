@@ -156,12 +156,24 @@
                 _source: ["title", "content"],
                 size: 20,
                 query: {
-                    match: {
-                        "content.main": {
-                            query: value,
-<!--                            fuzziness: 2,-->
-                            operator: "and"
-                        }
+                    bool: {
+                        must: [{
+                            match: {
+                                "content.main": {
+                                    query: value,
+        <!--                            fuzziness: 2,-->
+                                    operator: "and"
+                                }
+                            }
+                        }],
+                        should: [{
+                            match: {
+                                "title.main": {
+                                    query: value,
+                                    operator: "and"
+                                }
+                            }
+                        }]
                     }
                 }
             };
