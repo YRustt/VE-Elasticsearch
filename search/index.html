@@ -146,6 +146,74 @@
                     });
                 }
             });
+            var args3 = {
+                _source: "title",
+                suggest: {
+                    autocomplete: {
+                        text: value,
+                        completion: {
+                            field: "titleSuggest.input.completion"
+                        }
+                    }
+                }
+            };
+            $.ajax({
+                url: "http://127.0.0.1:9200/ftst/_search",
+                crossDomain: true,
+                type: "POST",
+                data: JSON.stringify(args3),
+                dataType: "json",
+                async: false,
+                contentType: "application/json; charset=utf-8",
+                success: function(result) {
+                    $("#ul_search").append("<li> </li>");
+                    result["suggest"]["autocomplete"][0]["options"].forEach(element => {
+                        var title = element["_source"]["title"];
+                        var id = element["_id"];
+                        console.log(id, title);
+                        $("#ul_search").append("<li onclick='liclick(this.id)' id='" + id + "'>" + title + "</li>");
+                    });
+                }
+            });
+
+            var args4 = {
+                _source: "title",
+                query: {
+                    match: {
+                        "title.main": {
+                            query: value,
+                            analyzer: "russian",
+                            operator: "and"
+                        }
+                    }
+                },
+                highlight: {
+                    fields: {
+                        "title.main": {
+                            pre_tags: ["<b>"],
+                            post_tags: ["</b>"]
+                        }
+                    }
+                }
+            };
+            $.ajax({
+                url: "http://127.0.0.1:9200/ftst/_search",
+                crossDomain: true,
+                type: "POST",
+                data: JSON.stringify(args4),
+                dataType: "json",
+                async: false,
+                contentType: "application/json; charset=utf-8",
+                success: function(result) {
+                    $("#ul_search").append("<li> </li>");
+                    result["hits"]["hits"].forEach(element => {
+                        var title = element["highlight"]["title.main"];
+                        var id = element["_id"];
+                        console.log(id, title);
+                        $("#ul_search").append("<li onclick='liclick(this.id)' id='" + id + "'>" + title + "</li>");
+                    });
+                }
+            });
 
             var tokens = value.split(" ");
             var args2 = {
@@ -159,7 +227,7 @@
                       }
                     }
                 }
-            }
+            };
             $.ajax({
                 url: "http://127.0.0.1:9200/ftst/_search",
                 crossDomain: true,
@@ -169,7 +237,7 @@
                 async: false,
                 contentType: "application/json; charset=utf-8",
                 success: function(result) {
-                    var options = result["suggest"]["correction"][0]
+                    var options = result["suggest"]["correction"][0];
                     if (options.length !== 0) {
                         $("#p_search").before("<p id='info_search'>Возможно вы имели ввиду: " + result["suggest"]["correction"][0]["options"][0]["text"] + "</p>");
                     }
