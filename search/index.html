@@ -56,6 +56,11 @@
             outline: none;
         }
 
+        #info_search {
+            margin-left: calc(25% + 20px);
+            color: grey;
+        }
+
         #p_search {
             margin-left: calc(25% + 20px);
         }
@@ -139,6 +144,35 @@
                         console.log(id, title);
                         $("#ul_search").append("<li onclick='liclick(this.id)' id='" + id + "'>" + title + "</li>");
                     });
+                }
+            });
+
+            var tokens = value.split(" ");
+            var args2 = {
+                _source: ["title"],
+                suggest: {
+                    correction: {
+                      text: tokens[tokens.length - 1],
+                      term: {
+                          field: "title.main",
+                          analyzer: "russian"
+                      }
+                    }
+                }
+            }
+            $.ajax({
+                url: "http://127.0.0.1:9200/ftst/_search",
+                crossDomain: true,
+                type: "POST",
+                data: JSON.stringify(args2),
+                dataType: "json",
+                async: false,
+                contentType: "application/json; charset=utf-8",
+                success: function(result) {
+                    var options = result["suggest"]["correction"][0]
+                    if (options.length !== 0) {
+                        $("#p_search").before("<p id='info_search'>Возможно вы имели ввиду: " + result["suggest"]["correction"][0]["options"][0]["text"] + "</p>");
+                    }
                 }
             });
         }
