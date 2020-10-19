@@ -1,0 +1,84 @@
+GET test/_search
+{
+  "_source": ["title"],
+  "size": 20,
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "bool": {
+            "must": [
+              {
+                "match": {
+                  "title.main": "title"
+                }
+              },
+              {
+                "terms": {
+                  "groupId": [144, 169]
+                }
+              },
+              {
+                "term": {
+                  "isPublic": true
+                }
+              },
+              {
+                "term": {
+                  "targetType": "doc"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "bool": {
+            "must": [
+              {
+                "match": {
+                  "title.main": "title"
+                }
+              },
+              {
+                "terms": {
+                  "groupId": [121]
+                }
+              },
+              {
+                "term": {
+                  "targetType": "doc"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "bool": {
+            "must": [
+              {
+                "match": {
+                  "title.main": "title"
+                }
+              },
+              {
+                "terms": {
+                  "groupId": [100, 81]
+                }
+              },
+              {
+                "term": {
+                  "isPublic": true
+                }
+              },
+              {
+                "term": {
+                  "targetType": "doc"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

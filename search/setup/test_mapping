@@ -1,0 +1,278 @@
+DELETE test
+
+PUT /test
+{
+  "settings": {
+    "analysis": {
+      "filter": {
+        "russian_stop": {
+          "type":       "stop",
+          "stopwords":  "_russian_"
+        },
+        "russian_stemmer": {
+          "type":       "stemmer",
+          "language":   "russian"
+        },
+        "autocomplete_filter": {
+          "type": "edge_ngram",
+          "min_gram": 2,
+          "max_gram": 20
+        }
+      },
+      "char_filter": {
+        "char_filter": {
+          "type": "mapping",
+          "mappings": ["Ё=>Е", "ё=>е"]
+        }
+      },
+      "analyzer": {
+        "rebuilt_russian": {
+          "tokenizer":  "standard",
+          "filter": [
+            "lowercase",
+            "russian_stop",
+            "russian_stemmer",
+            "autocomplete_filter"
+          ],
+          "char_filter": [
+            "char_filter"
+          ]
+        }
+      }
+    }
+  }
+}
+
+GET test/_settings
+
+
+PUT test/_mapping
+{
+    "properties": {
+      "groupId": {
+        "type": "long"
+      },
+      "sid": {
+        "type": "text"
+      },
+      "targetType": {
+        "type": "text",
+        "fields": {
+          "main": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "isPublic": {
+        "type": "boolean"
+      },
+      "title": {
+        "type": "text",
+        "fields": {
+          "completion": {
+            "type": "completion"
+          },
+          "main": {
+            "type": "text",
+            "analyzer": "rebuilt_russian",
+            "search_analyzer": "russian"
+          }
+        }
+      },
+      "content": {
+        "type": "text",
+        "fields": {
+          "main": {
+            "type": "text",
+            "analyzer": "russian",
+            "search_analyzer": "russian"
+          }
+        }
+      }
+    }
+}
+
+GET test/_mapping
+
+
+POST test/_doc
+{
+  "content": "content doc 1",
+  "groupId": 144,
+  "isPublic": true,
+  "sid": "doc-1",
+  "targetType": "doc",
+  "title": "title doc 1"
+}
+POST test/_doc
+{
+  "content": "content doc 2",
+  "groupId": 169,
+  "isPublic": true,
+  "sid": "doc-2",
+  "targetType": "doc",
+  "title": "title doc 2"
+}
+POST test/_doc
+{
+  "content": "content doc 3",
+  "groupId": 169,
+  "isPublic": false,
+  "sid": "doc-3",
+  "targetType": "doc",
+  "title": "title doc 3"
+}
+POST test/_doc
+{
+  "content": "content doc 4",
+  "groupId": 169,
+  "isPublic": false,
+  "sid": "doc-4",
+  "targetType": "doc",
+  "title": "title doc 4"
+}
+POST test/_doc
+{
+  "content": "content doc 5",
+  "groupId": 144,
+  "isPublic": false,
+  "sid": "doc-5",
+  "targetType": "doc",
+  "title": "title doc 5"
+}
+POST test/_doc
+{
+  "content": "content doc 6",
+  "groupId": 169,
+  "isPublic": true,
+  "sid": "doc-6",
+  "targetType": "doc",
+  "title": "title doc 6"
+}
+POST test/_doc
+{
+  "content": "content doc 7",
+  "groupId": 144,
+  "isPublic": true,
+  "sid": "doc-7",
+  "targetType": "doc",
+  "title": "title doc 7"
+}
+POST test/_doc
+{
+  "content": "content doc 8",
+  "groupId": 121,
+  "isPublic": true,
+  "sid": "doc-8",
+  "targetType": "doc",
+  "title": "title doc 8"
+}
+POST test/_doc
+{
+  "content": "content doc 9",
+  "groupId": 121,
+  "isPublic": false,
+  "sid": "doc-9",
+  "targetType": "doc",
+  "title": "title doc 9"
+}
+POST test/_doc
+{
+  "content": "content doc 10",
+  "groupId": 121,
+  "isPublic": false,
+  "sid": "doc-10",
+  "targetType": "doc",
+  "title": "title doc 10"
+}
+POST test/_doc
+{
+  "content": "content doc 11",
+  "groupId": 100,
+  "isPublic": false,
+  "sid": "doc-11",
+  "targetType": "doc",
+  "title": "title doc 11"
+}
+POST test/_doc
+{
+  "content": "content doc 12",
+  "groupId": 100,
+  "isPublic": true,
+  "sid": "doc-12",
+  "targetType": "doc",
+  "title": "title doc 12"
+}
+POST test/_doc
+{
+  "content": "content doc 13",
+  "groupId": 100,
+  "isPublic": true,
+  "sid": "doc-13",
+  "targetType": "doc",
+  "title": "title doc 13"
+}
+POST test/_doc
+{
+  "content": "content doc 14",
+  "groupId": 100,
+  "isPublic": true,
+  "sid": "doc-14",
+  "targetType": "doc",
+  "title": "title doc 14"
+}
+POST test/_doc
+{
+  "content": "content doc 15",
+  "groupId": 81,
+  "isPublic": true,
+  "sid": "doc-15",
+  "targetType": "doc",
+  "title": "title doc 15"
+}
+POST test/_doc
+{
+  "content": "content doc 16",
+  "groupId": 81,
+  "isPublic": true,
+  "sid": "doc-16",
+  "targetType": "doc",
+  "title": "title doc 16"
+}
+POST test/_doc
+{
+  "content": "content doc 17",
+  "groupId": 81,
+  "isPublic": false,
+  "sid": "doc-17",
+  "targetType": "doc",
+  "title": "title doc 17"
+}
+POST test/_doc
+{
+  "content": "content folder 1",
+  "groupId": 81,
+  "isPublic": true,
+  "sid": "folder-1",
+  "targetType": "folder",
+  "title": "folder 1"
+}
+POST test/_doc
+{
+  "content": "content folder 2",
+  "groupId": 100,
+  "isPublic": false,
+  "sid": "folder-2",
+  "targetType": "folder",
+  "title": "folder 2"
+}
+POST test/_doc
+{
+  "content": "content folder 3",
+  "groupId": 121,
+  "isPublic": true,
+  "sid": "folder-3",
+  "targetType": "folder",
+  "title": "folder 3"
+}
