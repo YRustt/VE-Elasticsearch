@@ -1,4 +1,4 @@
-DELETE ftst
+DELETE /ftst
 
 PUT /ftst
 {
@@ -43,10 +43,10 @@ PUT /ftst
   }
 }
 
-GET ftst/_settings
+GET /ftst/_settings
 
 
-PUT ftst/_mapping
+PUT /ftst/_mapping
 {
     "properties": {
       "title": {
@@ -54,14 +54,11 @@ PUT ftst/_mapping
         "fields": {
           "completion": {
             "type": "completion"
-            //"analyzer": "rebuilt_russian",
-            //"search_analyzer": "rebuilt_russian"
           },
           "main": {
             "type": "text",
             "analyzer": "rebuilt_russian"
-            //"search_analyzer": "rebuilt_russian",
-            //"search_quote_analyzer": "rebuilt_russian"
+            "search_analyzer": "russian"
           }
         }
       },
@@ -72,59 +69,22 @@ PUT ftst/_mapping
             "type": "text",
             "analyzer": "russian",
             "search_analyzer": "russian"
-            //"search_quote_analyzer": "rebuilt_russian"
+          }
+        }
+      }
+    },
+    "titleSuggest": {
+      "properties": {
+        "input": {
+          "type": "text",
+          "fields": {
+            "completion": {
+              "type": "completion"
+            }
           }
         }
       }
     }
 }
 
-GET ftst/_mapping
-
-
-GET /ftst/_search
-{
-  "query": {
-    "match": {
-      "content.main": {
-        "query": "коллективными договорами",
-        //"analyzer": "russian",
-        "fuzziness": 2,
-        "operator": "and"
-      }
-    }
-  }
-}
-
-GET /ftst/_search
-{
-  "_source": "title",
-  "suggest": {
-    "my-suggest": {
-      "prefix": "рук",
-      "completion": {
-        "field": "title.completion"
-      }
-    }
-  }
-}
-
-GET /ftst/_search
-{
-  "_source": "title",
-  "suggest": {
-    "my-suggest": {
-      "prefix": "догово",
-      "term": {
-        "field": "title.completion"
-      }
-    }
-  }
-}
-
-GET /ftst/_analyze
-{
-  "text": "коллективный договор",
-  "analyzer": "russian"
-}
-}
+GET /ftst/_mapping
