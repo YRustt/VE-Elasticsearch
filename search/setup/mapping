@@ -48,28 +48,28 @@ GET /ftst/_settings
 
 PUT /ftst/_mapping
 {
-    "properties": {
-      "title": {
-        "type": "text",
-        "fields": {
-          "completion": {
-            "type": "completion"
-          },
-          "main": {
-            "type": "text",
-            "analyzer": "rebuilt_russian"
-            "search_analyzer": "russian"
-          }
+  "properties": {
+    "title": {
+      "type": "text",
+      "fields": {
+        "completion": {
+          "type": "completion",
+          "max_input_length": 500
+        },
+        "main": {
+          "type": "text",
+          "analyzer": "rebuilt_russian",
+          "search_analyzer": "russian"
         }
-      },
-      "content": {
-        "type": "text",
-        "fields": {
-          "main": {
-            "type": "text",
-            "analyzer": "russian",
-            "search_analyzer": "russian"
-          }
+      }
+    },
+    "content": {
+      "type": "text",
+      "fields": {
+        "main": {
+          "type": "text",
+          "analyzer": "russian",
+          "search_analyzer": "russian"
         }
       }
     },
@@ -85,6 +85,7 @@ PUT /ftst/_mapping
         }
       }
     }
+  }
 }
 
 GET /ftst/_mapping
