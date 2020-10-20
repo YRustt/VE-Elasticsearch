@@ -1,0 +1,119 @@
+GET ftst/_search
+{
+  "_source": "title",
+  "size": 20,
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "bool": {
+            "must": [
+              {
+                "multi_match": {
+                  "query": "тест",
+                  "fields": ["title.main", "content.main"]
+                }
+              },
+              {
+                "terms": {
+                  "groupId": [1,16,25,36,38,39,40,41,42,58,65,322,324,325,327,333,357,397,398,399,404,406,415,432,442,471]
+                }
+              },
+              {
+                "term": {
+                  "isPublic": true
+                }
+              },
+              {
+                "term": {
+                  "targetType": "doc"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "bool": {
+            "must": [
+              {
+                "multi_match": {
+                  "query": "тест",
+                  "fields": ["title.main", "content.main"]
+                }
+              },
+              {
+                "terms": {
+                  "groupId": [96,189,198,119,29,224,54,15,457,485,486,405,488,489,490,491,492,195,196]
+                }
+              },
+              {
+                "term": {
+                  "targetType": "doc"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "bool": {
+            "must": [
+              {
+                "multi_match": {
+                  "query": "тест",
+                  "fields": ["title.main", "content.main"]
+                }
+              },
+              {
+                "terms": {
+                  "groupId": [189,198,224,54,457,485,486,488,489,490,491,492,195,196]
+                }
+              },
+              {
+                "term": {
+                  "isPublic": true
+                }
+              },
+              {
+                "term": {
+                  "targetType": "doc"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "bool": {
+            "must": [
+              {
+                "multi_match": {
+                  "query": "тест",
+                  "fields": ["title.main", "content.main"]
+                }
+              },
+              {
+                "terms": {
+                  "groupId": [189,198,224,54,457,485,486,488,489,490,491,492,195,196]
+                }
+              },
+              {
+                "term": {
+                  "isPublic": false
+                }
+              },
+              {
+                "term": {
+                  "sid": "c6734f53-cca8-4d4a-af80-8107e1b43576"
+                }
+              },
+              {
+                "term": {
+                  "targetType": "doc"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
